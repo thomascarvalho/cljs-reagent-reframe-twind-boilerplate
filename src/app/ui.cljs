@@ -6,8 +6,8 @@
 
 (def tw twind/tw)
 
-(defn styled [css child]
-  ((js-template twind-css/css css) child))
+(defn css [css-text]
+  (js-template twind-css/css css-text))
 
 (defn setup []
   (twind/setup #js {:preflight true

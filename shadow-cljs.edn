@@ -11,7 +11,6 @@
                 :modules    {:main {:init-fn app.core/main}}
                 :compiler-options {:output-feature-set :es6}
                 :js-options {:entry-keys ["module" "browser" "main"]}
-                
                 :dev {:closure-defines {re-frame.trace.trace-enabled? true}}
                 :release {:js-options
                           {:resolve {"react" {:target :npm

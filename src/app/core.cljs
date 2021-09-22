@@ -7,17 +7,19 @@
    [app.subs :as subs]
    ["react-helmet" :refer [Helmet]]
    ["react-router-dom" :refer (Route Link NavLink) :rename {BrowserRouter Router}]
-   [app.ui :refer [tw setup styled]]))
+   [app.ui :refer [tw setup css]]))
 
 (defn hero []
   (let [name (rf/subscribe [::subs/name])]
-    [:div {:className (tw "p-12 rounded text-center bg-blue-200 text-blue-900 text-xl shadow-md font-normal")}
+    [:div {:className
+           (tw "p-12 rounded text-center bg-blue-200 text-blue-900 text-xl shadow-md font-normal" (css "color: red;"))}
      "Hello " @name " !"]))
 
 (defn index []
   [:div
    [:> Helmet [:title "Home"]]
-   [:h2 "Home"]])
+   [:h2 "Home"]
+   [hero]])
 
 (defn users []
   [:div
@@ -29,7 +31,6 @@
    [:> Helmet [:title "About"]]
    [:h2 "About"]])
 
-;; react-router wants react component classes
 (def Index (r/reactify-component index))
 (def Users (r/reactify-component users))
 (def About (r/reactify-component about))
