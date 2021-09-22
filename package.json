@@ -1,0 +1,22 @@
+{
+  "name": "cljs-reagent-reframe-tailwind-boilerplate",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "shadow-cljs watch web",
+    "build": "shadow-cljs release --verbose web",
+    "serve": "serve build"
+  },
+  "devDependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "serve": "^12.0.0",
+    "shadow-cljs": "^2.15.1"
+  },
+  "dependencies": {
+    "preact": "^10.5.14",
+    "react-helmet": "^6.1.0",
+    "react-router-dom": "^5.3.0",
+    "twind": "^0.16.16"
+  }
+}
