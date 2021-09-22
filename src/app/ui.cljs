@@ -6,8 +6,13 @@
 
 (def tw twind/tw)
 
-(defn css [css-text]
-  (js-template twind-css/css css-text))
+(defn css [css-styles]
+  (if (string? css-styles)
+    (js-template twind-css/css css-styles)
+    (twind-css/css (clj->js css-styles))))
+
+(defn theme [key]
+  (twind-css/theme key))
 
 (defn setup []
   (twind/setup #js {:preflight true

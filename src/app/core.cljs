@@ -7,13 +7,15 @@
    [app.subs :as subs]
    ["react-helmet" :refer [Helmet]]
    ["react-router-dom" :refer (Route Link NavLink) :rename {BrowserRouter Router}]
-   [app.ui :refer [tw setup css]]))
+   [app.ui :refer [tw setup css theme]]))
 
 (defn hero []
   (let [name (rf/subscribe [::subs/name])]
-    [:div {:className
-           (tw "p-12 rounded text-center bg-blue-200 text-blue-900 text-xl shadow-md font-normal" (css "color: red;"))}
-     "Hello " @name " !"]))
+    [:div {:className (tw "p-12 rounded text-center bg-blue-200 shadow-md font-normal")}
+     [:h2 {:className (tw "text-xl" (css "color: red"))}
+      "Hello " @name " !"]
+     [:h3 {:className (tw (css {:color "blue"}))}
+      "Welcome"]]))
 
 (defn index []
   [:div
@@ -35,21 +37,37 @@
 (def Users (r/reactify-component users))
 (def About (r/reactify-component about))
 
+(def links [{:path "/" :label "Home" :component Index}
+            {:path "/about/" :label "About" :component About}
+            {:path "/users/" :label "Users" :component Users}])
+
+(defn navigation-link [label path]
+  [:> NavLink {:to path :exact true} label])
+
+(defn navigation-bar [links]
+  [:nav {:className (tw
+                     (css
+                      {"a"
+                       {:color (theme "colors.blue.500")
+                        "&.active" {:color (theme "colors.blue.900")}}}))}
+   [:ul {:className (tw "flex flex-row space-x-4")}
+    (map
+     (fn [{:keys [path label]}]
+       ^{:key path}[:li (navigation-link label path)]) links)]]
+  )
+
+(defn pages [links]
+  [:<> (map
+       (fn [{:keys [path component]}]
+         ^{:key path} [:> Route {:path path :exact true :component component}]) links)])
+
+
 (defn root []
   [:> Router
    [:div {:className (tw "p-6")}
-    [:nav
-     [:ul {:className (tw "flex flex-row space-x-4")}
-      [:li
-       [:> NavLink {:to "/"} "Home"]]
-      [:li
-       [:> NavLink {:to "/about/"} "About"]]
-      [:li
-       [:> NavLink {:to "/users/"} "Users"]]]]
+    [navigation-bar links]
     [:div {:className (tw "container mx-auto mt-12 px-6")}
-     [:> Route {:path "/" :exact true :component Index}]
-     [:> Route {:path "/about/" :component About}]
-     [:> Route {:path "/users/" :component Users}]]]])
+     [pages links]]]])
 
 (defn mount-root
   []
