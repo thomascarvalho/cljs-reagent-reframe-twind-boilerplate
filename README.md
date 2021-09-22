@@ -1,4 +1,4 @@
-# cljs-reagent-reframe-tailwind-boilerplate
+# cljs-reagent-reframe-twind-boilerplate
 
 An opinionated boilerplate for Reagent app.
 
