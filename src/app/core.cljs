@@ -6,8 +6,9 @@
    [app.events :as events]
    [app.subs :as subs]
    ["react-helmet" :refer [Helmet]]
-   ["react-router-dom" :refer (Route Link NavLink) :rename {BrowserRouter Router}]
+   ["react-router-dom" :refer (Route BrowserRouter Outlet NavLink Routes)]
    [app.ui :refer [tw setup css theme]]))
+
 
 (defn hero []
   (let [name (rf/subscribe [::subs/name])]
@@ -33,16 +34,8 @@
    [:> Helmet [:title "About"]]
    [:h2 "About"]])
 
-(def Index (r/reactify-component index))
-(def Users (r/reactify-component users))
-(def About (r/reactify-component about))
-
-(def links [{:path "/" :label "Home" :component Index}
-            {:path "/about/" :label "About" :component About}
-            {:path "/users/" :label "Users" :component Users}])
-
 (defn navigation-link [label path]
-  [:> NavLink {:to path :exact true} label])
+  [:> NavLink {:to path :end true} label])
 
 (defn navigation-bar [links]
   [:nav {:className (tw
@@ -53,21 +46,32 @@
    [:ul {:className (tw "flex flex-row space-x-4")}
     (map
      (fn [{:keys [path label]}]
-       ^{:key path}[:li (navigation-link label path)]) links)]]
-  )
+       ^{:key path} [:li (navigation-link label path)]) links)]])
+
+(def links [{:path "/" :index true :label "Home" :element index}
+            {:path "/about" :label "About" :element about}
+            {:path "/users" :label "Users" :element users}])
+
+(defn layout []
+  [:div {:className (tw "p-6")}
+   [navigation-bar links]
+   [:div {:className (tw "container mx-auto mt-12 px-6")}
+    [:> Outlet]]])
 
 (defn pages [links]
-  [:<> (map
-       (fn [{:keys [path component]}]
-         ^{:key path} [:> Route {:path path :exact true :component component}]) links)])
-
+  (map
+   (fn [link]
+     ^{:key (:label link)}
+     [:> Route {:path (:path link)
+                :index (:index link)
+                :element (r/as-element [:> (r/reactify-component (:element link))])}])
+   links))
 
 (defn root []
-  [:> Router
-   [:div {:className (tw "p-6")}
-    [navigation-bar links]
-    [:div {:className (tw "container mx-auto mt-12 px-6")}
-     [pages links]]]])
+  [:> BrowserRouter
+   [:> Routes
+    [:> Route {:path "/" :element (r/as-element [:> (r/reactify-component layout)])}
+     (pages links)]]])
 
 (defn mount-root
   []
